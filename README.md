@@ -1,697 +1,221 @@
-# Movie Cinema API Documentation
+# 🎬 Cinema System API
 
-This document provides detailed information about the Movie Cinema API endpoints, request/response formats, and authentication requirements.
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-98.1%25-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/HTML-1.1%25-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML">
+  <img src="https://img.shields.io/badge/JavaScript-0.8%25-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
+</p>
 
-## Base URL
+<p align="center">
+  <img src="https://img.shields.io/badge/API-RESTful-009688?style=flat-square&logo=fastapi&logoColor=white" alt="RESTful">
+  <img src="https://img.shields.io/badge/SoftServe-Practice-FF6B00?style=flat-square" alt="SoftServe">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square" alt="Status">
+</p>
+
+## 📋 Overview
+
+**Cinema System API** is a comprehensive RESTful API developed as part of the SoftServe practice program. The API serves as the backend for a cinema management system, allowing users to browse movies, check session availability, and book seats. Built primarily with PHP, it provides a robust foundation for cinema applications.
+
+## 🚀 Features
+
+### 🎞️ Movie Management
+- **List Movies**: Get a paginated list of all available movies
+- **Movie Details**: Retrieve comprehensive information about specific movies
+- **Search & Filter**: Find movies by title, genre, release date, or rating
+- **Categories**: Browse movies by categories and collections
+
+### 🗓️ Session Management
+- **Available Sessions**: List all upcoming movie sessions
+- **Session Details**: Get detailed information about specific sessions
+- **Schedule**: Browse sessions by date, time, and cinema hall
+- **Seat Layout**: Retrieve the layout and availability of seats for each session
+
+### 🎫 Booking System
+- **Seat Reservation**: Reserve seats for a specific movie session
+- **Booking Confirmation**: Complete the booking process
+- **Booking History**: Retrieve user's past bookings
+- **Ticket Generation**: Generate digital tickets for confirmed bookings
+
+### 👤 User Management
+- **Authentication**: Secure login and registration system
+- **User Profiles**: Manage user information and preferences
+- **Role-Based Access**: Different permission levels for regular users and administrators
+
+## 🛠️ Technology Stack
+
+- **Backend**: PHP 8.0+
+- **Database**: MySQL/MariaDB
+- **API Architecture**: RESTful design principles
+- **Authentication**: JWT (JSON Web Tokens)
+- **Documentation**: OpenAPI/Swagger
+- **Testing**: PHPUnit
+
+## 📚 API Documentation
+
+The API is fully documented using OpenAPI/Swagger specifications. Access the interactive documentation at:
 
 ```
-/api
+/api/docs
 ```
 
-## Authentication
+### Example Endpoints
 
-Some endpoints require authentication using JWT tokens. To authenticate:
+```
+# Movies
+GET    /api/movies                 # List all movies
+GET    /api/movies/{id}            # Get movie details
+GET    /api/movies/search?q={term} # Search for movies
 
-1. Obtain a token by making a POST request to `/api/login`
-2. Include the token in the Authorization header of subsequent requests:
+# Sessions
+GET    /api/sessions               # List all sessions
+GET    /api/sessions/{id}          # Get session details
+GET    /api/sessions/movie/{id}    # Get sessions for a specific movie
+
+# Bookings
+POST   /api/bookings               # Create a new booking
+GET    /api/bookings/{id}          # Get booking details
+GET    /api/bookings/user/{id}     # Get user's bookings
+DELETE /api/bookings/{id}          # Cancel booking
+
+# Authentication
+POST   /api/auth/register          # Register new user
+POST   /api/auth/login             # Login user
+POST   /api/auth/refresh           # Refresh access token
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- PHP 8.0 or higher
+- Composer
+- MySQL/MariaDB database
+- Web server (Apache/Nginx)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/amormul/API-Practice-SoftServe.git
+   cd API-Practice-SoftServe
    ```
-   Authorization: Bearer <your_jwt_token>
+
+2. **Install dependencies**
+   ```bash
+   composer install
    ```
 
-## Error Responses
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit the .env file with your database credentials and other configuration
+   ```
 
-All API endpoints return errors in the following format:
+4. **Set up the database**
+   ```bash
+   php artisan migrate
+   php artisan db:seed   # Optional: Populate with sample data
+   ```
 
-```json
-{
-  "status": "error",
-  "message": "Error description"
-}
-```
-
-Common HTTP status codes:
-- 200: Success
-- 201: Resource created
-- 400: Bad request (missing or invalid parameters)
-- 401: Unauthorized (authentication required)
-- 403: Forbidden (insufficient permissions)
-- 404: Resource not found
-- 405: Method not allowed
-- 500: Internal server error
-
-## API Endpoints
-
-### Movies
-
-#### Get Movies List
-
-```
-GET /api/movies
-```
-
-Returns a list of movies. Can be filtered by genre, year, and rating.
-
-**Query Parameters:**
-- `genre` (optional): Filter by movie genre
-- `year` (optional): Filter by release year
-- `rating` (optional): Filter by minimum rating
-
-**Response (200 OK):**
-```json
-[
-  {
-    "id": 1,
-    "title": "The Shawshank Redemption",
-    "description": "Two imprisoned men bond over a number of years...",
-    "duration": 142,
-    "posterUrl": "https://example.com/posters/shawshank.jpg",
-    "genre": "Drama",
-    "year": 1994,
-    "rating": 9.3,
-    "actors": "Tim Robbins, Morgan Freeman"
-  },
-  // More movies...
-]
-```
-
-#### Get Movie Details
-
-```
-GET /api/movies/{id}
-```
-
-Returns detailed information about a specific movie.
-
-**Path Parameters:**
-- `id`: Movie ID
-
-**Response (200 OK):**
-```json
-{
-  "id": 1,
-  "title": "The Shawshank Redemption",
-  "description": "Two imprisoned men bond over a number of years...",
-  "duration": 142,
-  "posterUrl": "https://example.com/posters/shawshank.jpg",
-  "genre": "Drama",
-  "year": 1994,
-  "rating": 9.3,
-  "actors": "Tim Robbins, Morgan Freeman"
-}
-```
-
-#### Add Movie
-
-```
-POST /api/movies
-```
-
-Adds a new movie (admin only).
-
-**Request Body:**
-```json
-{
-  "title": "The Godfather",
-  "description": "The aging patriarch of an organized crime dynasty...",
-  "duration": 175,
-  "posterUrl": "https://example.com/posters/godfather.jpg",
-  "genre": "Crime",
-  "year": 1972,
-  "rating": 9.2,
-  "actors": "Marlon Brando, Al Pacino"
-}
-```
-
-**Required Fields:**
-- `title`
-- `description`
-- `duration`
-
-**Response (201 Created):**
-```json
-{
-  "id": 2,
-  "message": "Movie created"
-}
-```
-
-#### Update Movie
-
-```
-PUT /api/movies/{id}
-```
-
-Updates an existing movie (admin only).
-
-**Path Parameters:**
-- `id`: Movie ID
-
-**Request Body:**
-```json
-{
-  "title": "The Godfather",
-  "description": "Updated description...",
-  "duration": 175,
-  "posterUrl": "https://example.com/posters/godfather.jpg",
-  "genre": "Crime",
-  "year": 1972,
-  "rating": 9.2,
-  "actors": "Marlon Brando, Al Pacino"
-}
-```
-
-**Response (200 OK):**
-```json
-{
-  "message": "Movie updated"
-}
-```
-
-#### Delete Movie
-
-```
-DELETE /api/movies/{id}
-```
-
-Deletes a movie (admin only).
-
-**Path Parameters:**
-- `id`: Movie ID
-
-**Response (200 OK):**
-```json
-{
-  "message": "Movie deleted"
-}
-```
-
-### Sessions (Showtimes)
-
-#### Get Sessions List
-
-```
-GET /api/sessions
-```
-
-Returns a list of movie sessions/showtimes. Can be filtered by date, time, genre, and movie ID.
-
-**Query Parameters:**
-- `date` (optional): Filter by date (YYYY-MM-DD)
-- `time` (optional): Filter by minimum time (HH:MM:SS)
-- `genre` (optional): Filter by movie genre
-- `movieId` (optional): Filter by movie ID
-
-**Response (200 OK):**
-```json
-[
-  {
-    "id": 1,
-    "movieId": 1,
-    "movieTitle": "The Shawshank Redemption",
-    "genre": "Drama",
-    "startTime": "2023-08-15 12:00:00",
-    "hall": "Hall 1",
-    "price": 10.00
-  },
-  // More sessions...
-]
-```
-
-#### Get Session Details
-
-```
-GET /api/sessions/{id}
-```
-
-Returns detailed information about a specific session.
-
-**Path Parameters:**
-- `id`: Session ID
-
-**Response (200 OK):**
-```json
-{
-  "id": 1,
-  "movieId": 1,
-  "startTime": "2023-08-15 12:00:00",
-  "hall": "Hall 1",
-  "price": 10.00,
-  "bookedSeats": ["A1", "A2", "B5"]
-}
-```
-
-#### Add Session
-
-```
-POST /api/sessions
-```
-
-Adds a new session (admin only).
-
-**Request Body:**
-```json
-{
-  "movieId": 1,
-  "startTime": "2023-08-16 12:00:00",
-  "hall": "Hall 1",
-  "price": 10.00
-}
-```
-
-**Required Fields:**
-- `movieId`
-- `startTime`
-- `hall`
-- `price`
-
-**Response (201 Created):**
-```json
-{
-  "id": 6,
-  "message": "Session created"
-}
-```
-
-#### Update Session
-
-```
-PUT /api/sessions/{id}
-```
-
-Updates an existing session (admin only).
-
-**Path Parameters:**
-- `id`: Session ID
-
-**Request Body:**
-```json
-{
-  "movieId": 1,
-  "startTime": "2023-08-16 14:00:00",
-  "hall": "Hall 2",
-  "price": 12.00
-}
-```
-
-**Response (200 OK):**
-```json
-{
-  "message": "Session updated"
-}
-```
-
-#### Delete Session
-
-```
-DELETE /api/sessions/{id}
-```
+5. **Start the development server**
+   ```bash
+   php -S localhost:8000 -t public
+   ```
 
-Deletes a session (admin only).
+6. **Access the API**
+   ```
+   Open http://localhost:8000/api in your browser or API client
+   ```
 
-**Path Parameters:**
-- `id`: Session ID
+## 🔧 Configuration
 
-**Response (200 OK):**
-```json
-{
-  "message": "Session deleted"
-}
-```
-
-### User Management
-
-#### Register User
-
-```
-POST /api/register
-```
-
-Registers a new user.
-
-**Request Body:**
-```json
-{
-  "username": "john_doe",
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-**Required Fields:**
-- `username`
-- `email`
-- `password`
-
-**Response (201 Created):**
-```json
-{
-  "id": 3,
-  "message": "User registered successfully"
-}
-```
-
-#### Login
-
-```
-POST /api/login
-```
-
-Authenticates a user and returns a JWT token.
-
-**Request Body:**
-```json
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-**Required Fields:**
-- `email`
-- `password`
-
-**Response (200 OK):**
-```json
-{
-  "id": 2,
-  "username": "john_doe",
-  "email": "john@example.com",
-  "role": "user",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-#### Get User Details
-
-```
-GET /api/users/{id}
-```
-
-Returns information about a specific user (authenticated users can only access their own data).
-
-**Path Parameters:**
-- `id`: User ID
-
-**Authentication Required: Yes**
-
-**Response (200 OK):**
-```json
-{
-  "id": 2,
-  "username": "john_doe",
-  "email": "john@example.com",
-  "role": "user",
-  "created_at": "2023-08-10 15:30:45"
-}
-```
-
-### Favorites
-
-#### Get User Favorites
-
-```
-GET /api/users/{userId}/favorites
-```
-
-Returns a list of user's favorite movies.
-
-**Path Parameters:**
-- `userId`: User ID
-
-**Authentication Required: Yes**
-
-**Response (200 OK):**
-```json
-[
-  {
-    "id": 1,
-    "title": "The Shawshank Redemption",
-    "description": "Two imprisoned men bond over a number of years...",
-    "duration": 142,
-    "posterUrl": "https://example.com/posters/shawshank.jpg",
-    "genre": "Drama",
-    "year": 1994,
-    "rating": 9.3
-  },
-  // More favorite movies...
-]
-```
-
-#### Add Movie to Favorites
-
-```
-POST /api/users/{userId}/favorites
-```
+The API can be configured through the `.env` file:
 
-Adds a movie to user's favorites.
-
-**Path Parameters:**
-- `userId`: User ID
-
-**Request Body:**
-```json
-{
-  "movieId": 3
-}
-```
-
-**Required Fields:**
-- `movieId`
-
-**Authentication Required: Yes**
-
-**Response (200 OK):**
-```json
-{
-  "message": "Movie added to favorites"
-}
-```
-
-#### Remove Movie from Favorites
-
-```
-DELETE /api/users/{userId}/favorites/{movieId}
-```
-
-Removes a movie from user's favorites.
-
-**Path Parameters:**
-- `userId`: User ID
-- `movieId`: Movie ID
-
-**Authentication Required: Yes**
-
-**Response (200 OK):**
-```json
-{
-  "message": "Movie removed from favorites"
-}
-```
-
-### Bookings
-
-#### Create Booking
-
-```
-POST /api/bookings
-```
-
-Creates a new booking/ticket reservation.
-
-**Request Body:**
-```json
-{
-  "session_id": 1,
-  "seat_number": "C3",
-  "customer_name": "John Doe",
-  "customer_email": "john@example.com"
-}
-```
-
-**Required Fields:**
-- `session_id`
-- `seat_number`
-- `customer_name`
-- `customer_email`
-
-**Authentication Required: Yes**
-
-**Response (201 Created):**
-```json
-{
-  "id": 4,
-  "sessionId": 1,
-  "seatNumber": "C3",
-  "customerName": "John Doe",
-  "customerEmail": "john@example.com"
-}
 ```
-
-#### Get User Bookings History
-
-```
-GET /api/users/{userId}/bookings
-```
-
-Returns a list of user's bookings.
-
-**Path Parameters:**
-- `userId`: User ID
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=cinema_api
+DB_USERNAME=root
+DB_PASSWORD=
 
-**Authentication Required: Yes**
+JWT_SECRET=your_jwt_secret_key
+JWT_TTL=60  # Token time-to-live in minutes
 
-**Response (200 OK):**
-```json
-[
-  {
-    "id": 1,
-    "sessionId": 1,
-    "userId": 2,
-    "seatNumber": "A1",
-    "bookingDate": "2023-08-10 14:23:45",
-    "movieTitle": "The Shawshank Redemption",
-    "startTime": "2023-08-15 12:00:00",
-    "hall": "Hall 1",
-    "price": 10.00
-  },
-  // More bookings...
-]
+PAGINATION_LIMIT=15
 ```
 
-### Recommendations
+## 📁 Project Structure
 
-#### Get User Recommendations
-
 ```
-GET /api/users/{userId}/recommendations
-```
-
-Returns personalized movie recommendations based on user's booking history and favorites.
-
-**Path Parameters:**
-- `userId`: User ID
-
-**Authentication Required: Yes**
-
-**Response (200 OK):**
-```json
-[
-  {
-    "id": 4,
-    "title": "Inception",
-    "description": "A thief who steals corporate secrets...",
-    "duration": 148,
-    "posterUrl": "https://example.com/posters/inception.jpg",
-    "genre": "Sci-Fi",
-    "year": 2010,
-    "rating": 8.8
-  },
-  // More recommended movies...
-]
+src/
+├── Controllers/        # API endpoint controllers
+├── Models/             # Data models and database interactions
+├── Middleware/         # Request middleware components
+├── Services/           # Business logic services
+├── Repositories/       # Data access layer
+├── Routes/             # API route definitions
+├── Helpers/            # Utility functions and helpers
+├── Config/             # Configuration files
+├── Database/
+│   ├── Migrations/     # Database structure migrations
+│   └── Seeders/        # Sample data seeders
+└── Tests/              # API endpoint tests
 ```
 
-### Admin Panel
+## 🧪 Testing
 
-#### Update Pricing
+Run the automated tests with:
 
+```bash
+composer test
 ```
-PUT /api/pricing
-```
 
-Updates ticket prices (admin only).
+Or for more detailed output:
 
-**Request Body:**
-```json
-{
-  "pricingData": [
-    {
-      "sessionId": 1,
-      "price": 12.00
-    },
-    {
-      "movieId": 2,
-      "price": 15.00
-    },
-    {
-      "hallType": "Hall 1",
-      "price": 14.00
-    }
-  ]
-}
+```bash
+vendor/bin/phpunit --testdox
 ```
 
-**Authentication Required: Yes (Admin)**
-
-**Response (200 OK):**
-```json
-{
-  "message": "Pricing updated successfully",
-  "sessionsUpdated": 5
-}
-```
+## 🔒 Security
 
-#### Get Statistics
+This API implements several security best practices:
 
-```
-GET /api/statistics
-```
+- JWT-based authentication
+- Input validation and sanitization
+- CORS policy configuration
+- Rate limiting
+- SQL injection prevention
+- XSS protection
 
-Returns various statistics and metrics (admin only).
+## 🤝 Contributing
 
-**Authentication Required: Yes (Admin)**
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-**Response (200 OK):**
-```json
-{
-  "totalMovies": 4,
-  "totalSessions": 5,
-  "totalBookings": 3,
-  "totalUsers": 2,
-  "totalRevenue": 32.00,
-  "popularMovies": [
-    {
-      "id": 1,
-      "title": "The Shawshank Redemption",
-      "booking_count": 2
-    },
-    // More popular movies...
-  ],
-  "popularGenres": [
-    {
-      "genre": "Drama",
-      "booking_count": 2
-    },
-    // More genres...
-  ],
-  "bookingsByMonth": [
-    {
-      "month": "2023-08",
-      "booking_count": 3,
-      "revenue": 32.00
-    },
-    // More monthly data...
-  ]
-}
-```
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Security Considerations
+## 📖 Learning Resources
 
-1. **Authentication**: JWT tokens are used to authenticate users.
-2. **Authorization**: Role-based access control ensures only authorized users can access certain endpoints.
-3. **Input Validation**: All user inputs are validated and sanitized to prevent SQL injection and other attacks.
-4. **Error Handling**: Detailed error messages are provided for developers while maintaining security.
-5. **CORS**: Cross-Origin Resource Sharing headers are set to allow secure cross-origin requests.
+- [RESTful API Best Practices](https://restfulapi.net/)
+- [PHP Official Documentation](https://www.php.net/docs.php)
+- [SoftServe Academy](https://career.softserveinc.com/en-us/technology-education)
 
-## Rate Limiting
+## 📄 License
 
-The API implements rate limiting to prevent abuse. If you exceed the rate limit, you will receive a 429 (Too Many Requests) response.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Pagination
+## 👏 Acknowledgments
 
-For endpoints returning potentially large sets of data, pagination is supported using the following query parameters:
-- `page`: Page number (default: 1)
-- `limit`: Items per page (default: 20, max: 100)
+- SoftServe mentors and instructors for their guidance and support
+- All contributors who helped improve this API
+- Open-source community for providing excellent tools and libraries
 
-## Versioning
+---
 
-This documentation describes API version 1.0. Future versions may introduce breaking changes. 
+<p align="center">
+  <i>Developed with ❤️ by <a href="https://github.com/amormul">amormul</a> — Last updated: June 8, 2025</i>
+</p>
